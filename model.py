@@ -7,4 +7,4 @@ class Book(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     author = Column(String(255), nullable=False)
-    published = Column(String(255), nullable=True)
+    publish_date = Column(String(255), nullable=True)
