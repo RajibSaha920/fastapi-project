@@ -1,5 +1,5 @@
 from sqlalchemy import Column , Integer, String,DateTime
-from auth_database import Base
+from auth.auth_database import Base
 from sqlalchemy.sql import func
 
 class User(Base):
