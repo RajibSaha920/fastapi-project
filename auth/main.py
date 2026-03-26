@@ -1,6 +1,6 @@
 from fastapi import FastAPI,Depends,HTTPException,status
 from sqlalchemy.orm import Session
-from auth model,schemas,utils
+from auth import model, schemas, utils
 from auth.auth_database import get_db
 from jose import jwt
 from datetime import datetime, timedelta, timezone
