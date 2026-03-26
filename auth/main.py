@@ -4,7 +4,8 @@ import model,schemas,utils
 from auth_database import get_db
 from jose import jwt
 from datetime import datetime, timedelta, timezone
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm,OAuth2PasswordBearer
+from jose import JWTError
 
 SECRET_KEY = "xS7yIeqMaoZmpSux9YzAk00ezzqv2Pag57TlqWKMHE0"
 ALGORITHM = "HS256"
@@ -62,6 +63,35 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(),db:Session = Depends(
   token = create_access_token(token_data)
   return {'access_token': token, "token_type": "bearer"}
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+def get_current_user(token: str = Depends(oauth2_scheme)):
+  credential_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="Could not validate data",
+  headers={"WWW-Authenticate": "Bearer"}
+  )
+   
+  try:
+    payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+    username:str = payload.get("sub")
+    role:str = payload.get("role")
+    if username is None or role is None:
+       raise credential_exception
 
+  except JWTError:
+     raise credential_exception
+  return {"username": username, "role":role}
+  
+
+@app.get("/protected")
+def protected_route(current_user:dict = Depends(get_current_user)):
+  return {"message": f"Hello, {current_user['username']} | tou accessed a protected route"}
+  def require_roles(allowed_roles: list[str]):
+    def role_checker(current_user: dict = Depends(get_current_user)):
+        if current_user.get("role") not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not enough permissions"
+            )
+        return current_user
+    return role_checker
                                                 
 
