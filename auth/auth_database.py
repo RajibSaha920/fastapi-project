@@ -13,9 +13,7 @@ DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYS
 # Create engine
 engine = create_engine(
     DATABASE_URL,
-    ech=True,
-    pool_pre_ping=True,
-    future=True
+    pool_pre_ping=True
 )
 
 # SessionLocal factory
