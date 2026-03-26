@@ -8,3 +8,6 @@ class Book(Base):
     title = Column(String(255), nullable=False)
     author = Column(String(255), nullable=False)
     publish_date = Column(String(255), nullable=True)
+
+    def __repr__(self):
+        return f"<Book(title={self.title}, author={self.author})>"
