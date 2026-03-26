@@ -84,14 +84,27 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
 @app.get("/protected")
 def protected_route(current_user:dict = Depends(get_current_user)):
   return {"message": f"Hello, {current_user['username']} | tou accessed a protected route"}
-  def require_roles(allowed_roles: list[str]):
-    def role_checker(current_user: dict = Depends(get_current_user)):
-        if current_user.get("role") not in allowed_roles:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="Not enough permissions"
-            )
-        return current_user
-    return role_checker
+def require_roles(allowed_roles: list[str]):
+  def role_checker(current_user: dict = Depends(get_current_user)):
+      if current_user.get("role") not in allowed_roles:
+          raise HTTPException(
+              status_code=status.HTTP_403_FORBIDDEN,
+              detail="Not enough permissions"
+          )
+      return current_user
+  return role_checker
                                                 
 
+@app.get("/profile")
+def profile(current_user: dict = Depends(require_roles(["user", "admin"]))):
+    return {
+        "message": f"Profile of {current_user['username']} ({current_user['role']})"
+    }
+
+@app.get("/user/dashboard")
+def user_dashboard(current_user:dict = Depends(require_roles(['user']))):
+   return {"message": "Welcome User"}
+
+@app.get("/admin/dashboard")
+def user_dashboard(current_user:dict = Depends(require_roles(['admin']))):
+   return {"message": "Welcome Admin"}
